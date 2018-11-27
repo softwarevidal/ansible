@@ -1,4 +1,5 @@
 - hosts: vira-host
+  connection: local
   user: root
   roles:
    - { role: keycloak, tags: keycloak }
