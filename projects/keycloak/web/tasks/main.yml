@@ -4,3 +4,27 @@
      dest: "/home/vidal/vira/conf/{{item}}"
   with_items:
      - keycloak.json
+
+- name: Delete wrong file keycloak.service
+  file:
+     state: absent
+     path: "/etc/systemd/system"
+
+- name: copy wright file keycloak.service
+  template:
+     src: "{{item}}.j2"
+     dest: "/etc/systemd/system/{{item}}"
+  with_items:
+     - keycloak.service
+
+- file:
+    path: /home/vidal/keycloak
+    owner: wildfly
+    group: wildfly
+    mode: 0644
+
+- name: Create symbolic link for java
+  file:
+    src: "/usr/lib/jvm/java-1.10.0-openjdk/bin/java"
+    dest: "/usr/bin/java"
+    state: link
