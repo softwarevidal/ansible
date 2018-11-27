@@ -1,0 +1,9 @@
+[vira-host]
+localhost
+
+[deploy-host]
+localhost
+
+[all:children]
+vira-host
+deploy-host

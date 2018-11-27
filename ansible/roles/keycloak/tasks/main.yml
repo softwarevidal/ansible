@@ -1,0 +1,89 @@
+---
+- name: check for existing install...
+  become: yes
+  become_user: root
+  stat:
+    path: '{{keycloak_install_dir}}'
+  changed_when: False
+  register: keycloak_binary
+- when: not keycloak_binary.stat.exists
+  block:
+    - name: download tgz
+      become: yes
+      become_user: root
+      get_url:
+        url: '{{keycloak_tgz_url}}'
+        dest: /tmp/{{keycloak_tgz}}
+        checksum: '{{keycloak_checksum}}'
+        mode: 0644
+    - name: unarchive
+      become: yes
+      become_user: root
+      unarchive:
+        remote_src: yes
+        src: /tmp/{{keycloak_tgz}}
+        dest: '{{keycloak_parent_install_dir}}'
+        creates: '{{keycloak_install_dir}}'
+  always:
+    - name: cleanup...
+      become: yes
+      become_user: root
+      file:
+        path: /tmp/{{keycloak_tgz}}
+        state: absent
+
+- name: link
+  become: yes
+  become_user: root
+  file:
+    src: '{{keycloak_install_dir}}'
+    dest: '{{keycloak_link_dir}}'
+    state: link
+
+- name: add to path
+  become: yes
+  become_user: root
+  with_items:
+    - f: keycloak.sh
+      d: /etc/profile.d
+  template:
+    src: '{{item.f}}.j2'
+    dest: '{{item.d}}/{{item.f}}'
+    mode: '{{item.m|default("0644")}}'
+
+- name: copy the standalone.xml configuration file
+  template:
+    src: standalone.xml.j2
+    dest: "{{ keycloak_install_dir }}/standalone/configuration/standalone.xml"
+  notify: restart keycloak
+
+- name: create user wildfly
+  user:
+    name: "{{ user_wildfly }}"
+    createhome: no
+    state: present
+    shell: /sbin/nologin
+
+- name: add user privileges on wildfly directory
+  file:
+    path: "{{ keycloak_install_dir }}"
+    state: directory
+    owner: "{{ user_wildfly }}"
+    group: "{{ user_wildfly }}"
+    mode: 0754
+    recurse: yes
+  when: user_wildfly is defined
+
+- name: Add keycloak systemd unit file
+  template:
+    src: keycloak.service.j2
+    dest: '/etc/systemd/system/keycloak.service'
+    mode: 0644
+  when: ansible_os_family ==  "RedHat" and ansible_distribution_major_version ==  "7"
+  notify: restart keycloak
+
+- name: enable service keycloak on boot
+  systemd:
+    name: keycloak
+    enabled: yes
+  when: ansible_distribution_major_version == "7" and ansible_os_family == "RedHat"

@@ -1,0 +1,9 @@
+---
+# handlers file for keycloak
+- name: restart keycloak
+  service:
+     name: keycloak
+     state: restarted
+     daemon_reload: yes
+
+

@@ -1,0 +1,5 @@
+- hosts: vira-host
+  user: root
+  roles:
+   - { role: keycloak, tags: keycloak }
+   - { role: web, tags: web }
