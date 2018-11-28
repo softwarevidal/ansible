@@ -16,6 +16,6 @@ keycloak_parent_install_dir: /home/vidal
 
 user_wildfly: wildfly
 keycloak_bind_address: 0.0.0.0
-keycloak_http_port: 8080
+keycloak_http_port: 8081
 keycloak_https_port: 8443
 
