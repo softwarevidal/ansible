@@ -5,12 +5,6 @@
   with_items:
      - keycloak.json
 
-- file:
-    path: /home/vidal/keycloak
-    owner: wildfly
-    group: wildfly
-    mode: 0644
-
 - name: Create symbolic link for java
   file:
     src: "/usr/lib/jvm/java-1.10.0-openjdk/bin/java"
