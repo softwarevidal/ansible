@@ -1,0 +1,25 @@
+[Unit]
+#Ansible managed: This file is managed by Ansible, all changes will be lost. Please contact your devops team for any changes
+
+#Description= Tomcat Instance for demo-fhir
+Wants=syslog.target network.target
+After=syslog.target network.target
+
+[Service]
+Type=simple
+SyslogIdentifier={{ product_name}}
+Environment=JAVA_HOME=/usr/lib/jvm/jre
+
+ExecStart=/usr/bin/java11 -Dvertx.cacheDirBase={{ product_dir}}/.vertx-cache -Dvertx.hazelcast.config={{ product_dir}}/conf/cluster.xml -Dhazelcast.logging.type=slf4j -Dvertx.logger-delegate-factory-class-name=io.vertx.core.logging.SLF4JLogDelegateFactory -Dlogback.configurationFile={{ product_dir}}/conf/logback.xml -Dkeycloak.file.path={{ product_dir }}/conf/keycloak.json -jar {{ product_dir}}/{{repo_name}}.jar -conf {{ product_dir}}/conf/conf.json
+
+LimitNPROC=80000
+LimitNOFILE=30000
+
+User=tomcat
+Group=tomcat
+
+RestartSec=3s
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

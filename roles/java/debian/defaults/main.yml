@@ -1,0 +1,15 @@
+---
+java8: 
+  build_version: "8u131"
+  version: "b11"
+  code_version: "d54c1d3a095b4ff2b6607d096fa80163"
+  type: "jdk" # type can be "server-jre", "jre", "jdk"
+  architecture: "x64" # can be "x64", "i586"
+  destination: "/opt/java/" 
+
+java7oracle:
+  build_version: "7u71-b14"
+  version: "7u71"
+  type: "server-jre" # type can be "server-jre", "jre", "jdk"
+  architecture: "x64" # can be "x64", "i586"
+  destination: "/usr/lib/jvm"

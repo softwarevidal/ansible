@@ -1,0 +1,5 @@
+---
+product_entity: 'vira'
+product_dir: '/home/vidal/{{ product_entity }}'
+repo_name: "vira"
+conf_name: "{{ repo_name }}"

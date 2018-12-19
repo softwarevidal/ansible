@@ -3,4 +3,5 @@
   user: root
   roles:
    - { role: keycloak, tags: keycloak }
+   - { role: java, java_version: "11-openjdk", tags: java }
    - { role: web, tags: web }

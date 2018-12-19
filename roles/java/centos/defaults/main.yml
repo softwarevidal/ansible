@@ -1,0 +1,30 @@
+---
+java7oracle:
+  build_version: "7u71-b14"
+  version: "7u71"
+  type: "server-jre" # type can be "server-jre", "jre", "jdk"
+  architecture: "x64" # can be "x64", "i586"
+  destination: "/usr/lib/jvm"
+
+java8:
+  build_version: "8u151"
+  code_version: "e758a0de34e24606bca991d704f6dcbf"
+  version: "b12"
+  type: "jdk" # type can be "server-jre", "jre", "jdk"
+  architecture: "x64" # can be "x64", "i586"
+  destination: "/usr/lib/jvm"
+
+java10:
+  build_version: "10.0.1"
+  code_version: "fb4372174a714e6b8c52526dc134031e"
+  version: "10"
+  architecture: "x64"
+  destination: "/usr/lib/jvm"
+
+java11:
+  build_version: "11.0.1"
+  version: "11"
+  jdk_version: "13"
+  code_GPL: "GPL"
+  architecture: "x64"
+  destination: "/usr/lib/jvm"

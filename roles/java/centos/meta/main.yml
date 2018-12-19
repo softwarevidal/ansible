@@ -1,0 +1,3 @@
+dependencies:
+  - { role: epel, when: java_version == "8" }
+  - { role: epel, when: java_version == "10" }

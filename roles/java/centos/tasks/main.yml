@@ -1,0 +1,149 @@
+- name: copy java 6 rpm.bin for centos 64 bits
+  copy: src="{{ item }}" dest="/root" mode=755
+  with_items:
+    - jdk-6u43-linux-x64-rpm.bin
+    - jre-6u43-linux-x64-rpm.bin
+  when: java_version == "6"
+  tags: java
+
+- name: extract jdk 6 for centos 64 bits
+  shell: /root/jdk-6u43-linux-x64-rpm.bin creates="/root/jdk-6u43-linux-amd64.rpm"
+  when:  java_version == "6"
+  tags: java
+
+- name: extract jre 6 for centos 64 bits
+  shell: /root/jre-6u43-linux-x64-rpm.bin creates="/root/jre-6u43-linux-amd64.rpm"
+  when: java_version == "6"
+  tags: java
+
+- name: install rpm for jdk 6 and jre 6 for centos 64 bits
+  yum: name={{ item }} state=present
+  with_items:
+    - "/root/jdk-6u43-linux-amd64.rpm"
+    - "/root/jre-6u43-linux-amd64.rpm"
+  when: java_version == "6"
+  tags: java
+
+- name: install openjre 7 for centos 64 bits
+  yum: name=java-1.7.0-openjdk state=installed
+  when: java_version == "7"
+  tags: java
+
+- name: "[java8] Ensure python-httplib2 is present for uri module"
+  yum: name=python-httplib2 state=present
+  when: java_version == "8" or java_version == "7-oracle"
+  sudo: true
+  tags: java
+
+- name: "[java8] Download Oracle Java from the official website accepting the license"
+  uri: url="http://download.oracle.com/otn-pub/java/jdk/{{ java8.build_version }}-{{ java8.version }}/{{ java8.code_version }}/{{ java8.type }}-{{ java8.build_version }}-linux-{{ java8.architecture }}.rpm"
+       dest="/tmp/java-{{ java8.build_version }}.rpm"
+       HEADER_Cookie="oraclelicense=accept-securebackup-cookie;"
+       creates="/root/java-{{ java8.build_version }}.rpm"
+  when: java_version == "8"
+  register: java
+  tags: java
+- name: "install java8 Oracle"
+  yum: name="/tmp/java-{{ java8.build_version  }}.rpm" state=installed
+  when: java_version == "8"
+  tags: java
+
+- name: ensure that the directory is present
+  file:
+    path: /usr/lib/jvm/
+    state: directory
+  when: java_version == "10-openjdk" or java_version == "11-openjdk"
+  tags: java
+
+- name: "[java10] Download & Uncompress tar gz file on the directory"
+  unarchive:
+    src: https://download.java.net/java/GA/jdk{{java10.version}}/{{java10.build_version}}/{{java10.code_version}}/{{java10.version}}/openjdk-{{java10.build_version}}_linux-{{java10.architecture}}_bin.tar.gz
+    dest: /usr/lib/jvm/
+    remote_src: yes
+    creates: /usr/lib/jvm/jdk-{{java10.build_version}}
+  when: java_version == "10-openjdk"
+  tags: java
+
+- name: "[java10] Add link for java binary"
+  file:
+    src: /usr/lib/jvm/jdk-{{java10.build_version}}/bin/java
+    dest: /usr/bin/java10
+    state: link
+  when: java_version == "10-openjdk"
+  tags: java
+
+- name: "[java10] Add link for java home "
+  file:
+    src: /usr/lib/jvm/jdk-{{java10.build_version}}/
+    dest: /usr/lib/jvm/java-1.10.0-openjdk
+    state: link
+  when: java_version == "10-openjdk"
+  tags: java
+
+- name: "[java11] Download & Uncompress tar gz file on the directory"
+  unarchive:
+    src: https://download.java.net/java/GA/jdk{{java11.version}}/{{java11.jdk_version}}/{{java11.code_GPL}}/openjdk-{{java11.build_version}}_linux-{{java11.architecture}}_bin.tar.gz
+    dest: /usr/lib/jvm/
+    remote_src: yes
+    creates: /usr/lib/jvm/jdk-{{java11.build_version}}
+  when: java_version == "11-openjdk"
+  tags: java
+
+- name: "[java11] Add link for java binary"
+  file:
+    src: /usr/lib/jvm/jdk-{{java11.build_version}}/bin/java
+    dest: /usr/bin/java11
+    state: link
+  when: java_version == "11-openjdk"
+  tags: java
+
+- name: "[java11] Add link for java home "
+  file:
+    src: /usr/lib/jvm/jdk-{{java11.build_version}}/
+    dest: /usr/lib/jvm/java-1.11.0-openjdk
+    state: link
+  when: java_version == "11-openjdk"
+  tags: java
+
+- name: "[java7oracle] Download Oracle Java from the official website accepting the license"
+  uri: url="http://download.oracle.com/otn-pub/java/jdk/{{ java7oracle.build_version }}/{{ java7oracle.type }}-{{ java7oracle.version }}-linux-{{ java7oracle.architecture }}.tar.gz"
+       dest="/tmp/java-{{ java7oracle.build_version }}.tar.gz"
+       HEADER_Cookie="oraclelicense=accept-securebackup-cookie;"
+       creates="/tmp/java-{{ java7oracle.build_version }}.tar.gz"
+  when: java_version == "7-oracle"
+  register: java
+  tags: java
+
+- name: "[java7oracle] Make sure the Java installation destination path exists"
+  file: path="{{ java7oracle.destination }}" state=directory
+  when: java_version == "7-oracle"
+  sudo: true
+  tags: java
+
+- name: "[java7oracle] Extract target directory from archive"
+  shell: tar -tf /tmp/java-{{ java7oracle.build_version }}.tar.gz | head -1
+  register: java_extract_dir
+  when: java.changed and java_version == "7-oracle"
+  tags: java
+
+- name: "[java7oracle] Un-tar Java for versions not supported by make-jpkg"
+  command: tar xvf /tmp/java-{{ java7oracle.build_version }}.tar.gz chdir={{ java7oracle.destination }} creates={{ java7oracle.destination }}{{ java_extract_dir.stdout }}
+  when: java.changed and java_version == "7-oracle"
+  sudo: true
+  tags: java
+
+- name: "[java7oracle] Set-up java with the update-alternatives"
+  command: update-alternatives --install "/usr/bin/java" "java" "{{ java7oracle.destination }}{{ java_extract_dir.stdout }}bin/java" 1
+  when: java.changed and java_version == "7-oracle"
+  sudo: true
+  tags: java
+
+- name: "[java7oracle] Set-up directory for java 7 with the update-alternatives"
+  command: update-alternatives --install "/usr/lib/jvm/java-7-oracle" "java_dir" "{{ java7oracle.destination }}{{ java_extract_dir.stdout }}" 1
+  when: java.changed and java_version == "7-oracle"
+  sudo: true
+  tags: java
+
+- name: ensure that Java 8 openjdk is installed
+  yum: name=java-1.8.0-openjdk state=present
+  when: java_version == "8-openjdk"
