@@ -1,7 +1,7 @@
 - name: copy app conf file
   template:
-     src: "{{item}}.j2"
-     dest: "/home/vidal/vira/conf/{{item}}"
+     src: "{{ item }}.j2"
+     dest: "/home/vidal/vira/conf/{{ item }}"
   with_items:
      - keycloak.json
 
@@ -12,6 +12,11 @@
     state: link
 
 - name:  copy systemd script for vira
-  template: src=tomcat-systemd.j2 dest="/usr/lib/systemd/system/{{ product_name}}.service" mode=0644
+  template:
+     src: "{{ item }}.j2"
+     dest: "/usr/lib/systemd/system/{{ product_name }}.service"
+     mode: 0644
+  with_items:
+     - tomcat-systemd
   tags: tomcat_init
   notify: restart java
