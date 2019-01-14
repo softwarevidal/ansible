@@ -1,0 +1,6 @@
+- hosts: fhir-host
+  connection: local
+  user: root
+  roles:
+   - { role: java, java_version: "11-openjdk", tags: java }
+   - { role: web, tags: web }

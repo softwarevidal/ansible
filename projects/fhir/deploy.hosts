@@ -1,0 +1,12 @@
+[fhir-host]
+localhost
+
+[deploy-host]
+localhost
+
+[all:children]
+fhir-host
+deploy-host
+
+[fhir-host:vars]
+env="prod"
