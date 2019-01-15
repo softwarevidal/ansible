@@ -1,0 +1,8 @@
+- name: restart java
+  service:
+     name: "{{ product_name }}"
+     state: restarted
+
+- name: daemon-reload
+  systemd:
+     daemon_reload: yes

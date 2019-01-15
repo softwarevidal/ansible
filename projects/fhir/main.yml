@@ -3,4 +3,6 @@
   user: root
   roles:
    - { role: java, java_version: "11-openjdk", tags: java }
-   - { role: web, tags: web }
+   - { role: tomier, tags: tomtier }
+  var_files:
+   - ['vars/env_{{ env }}.yml']
