@@ -3,3 +3,4 @@ product_entity: 'fhir'
 product_dir: '/home/vidal/{{ product_entity }}'
 repo_name: "fhir"
 conf_name: "{{ repo_name }}"
+product_name: 'fhir'
