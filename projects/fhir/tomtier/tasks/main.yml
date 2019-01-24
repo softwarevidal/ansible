@@ -12,4 +12,6 @@
   with_items:
      - tomcat-systemd
   tags: tomcat_init
-  notify: restart java
+  notify:
+     - restart daemon-reload
+     - restart java
