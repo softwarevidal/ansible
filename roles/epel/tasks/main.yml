@@ -1,4 +1,4 @@
 ---
 - name: install EPEL rpm
-  yum: name=epel-release state=installed 
+  yum: name=epel-release state=installed
 

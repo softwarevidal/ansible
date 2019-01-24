@@ -4,3 +4,5 @@ product_dir: '/home/vidal/{{ product_entity }}'
 repo_name: "vira"
 conf_name: "{{ repo_name }}"
 product_name: 'vira'
+
+java_version: 8
