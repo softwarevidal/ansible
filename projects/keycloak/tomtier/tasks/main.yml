@@ -13,5 +13,5 @@
      - tomcat-systemd
   tags: tomcat_init
   notify:
-     - restart daemon-reload
+     - daemon-reload
      - restart java
